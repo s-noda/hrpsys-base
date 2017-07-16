@@ -56,9 +56,6 @@ namespace shmseq {
         shm->tm = tm;
         shm->state = STATE::WRITE;
         pthread_mutex_unlock(&shm->cmd_lock);
-        std::cout << __func__;
-        for (int i=0;i<size;i++) std::cout << " " << shm->ref_angle_vector[i];
-        std::cout << std::endl;
         return true; }
     bool getJointAngles(double* q, double* tm, int size) {
         bool ret = false;
