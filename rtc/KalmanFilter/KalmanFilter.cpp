@@ -14,6 +14,7 @@
 #include <math.h>
 #include <hrpModel/Link.h>
 #include <hrpModel/Sensor.h>
+#include "../SequencePlayer/shmseq.cpp"
 
 //#define USE_EKF
 
@@ -56,6 +57,7 @@ KalmanFilter::KalmanFilter(RTC::Manager* manager)
     loop(0)
 {
   m_service0.kalman(this);
+  shmseq::initialize(false);
 }
 
 KalmanFilter::~KalmanFilter()
@@ -232,6 +234,10 @@ RTC::ReturnCode_t KalmanFilter::onExecute(RTC::UniqueId ec_id)
         }
         rpy_kf.main_one(rpy, rpyRaw, baseRpyCurrent, acc, gyro, sl_y, BtoS);
     }
+    if ( shmseq::shm ) {
+        shmseq::shm->cur_rpy[0] = rpy(0);
+        shmseq::shm->cur_rpy[1] = rpy(1);
+        shmseq::shm->cur_rpy[2] = rpy(2); }
     m_rpyRaw.data.r = rpyRaw(0);
     m_rpyRaw.data.p = rpyRaw(1);
     m_rpyRaw.data.y = rpyRaw(2);

@@ -15,6 +15,7 @@
 #include <hrpModel/JointPath.h>
 #include <hrpUtil/MatrixSolvers.h>
 #include "../ImpedanceController/JointPathEx.h"
+#include "shmseq.cpp"
 
 typedef coil::Guard<coil::Mutex> Guard;
 
@@ -66,6 +67,7 @@ SequencePlayer::SequencePlayer(RTC::Manager* manager)
     m_service0.player(this);
     m_clearFlag = false;
     m_waitFlag = false;
+    shmseq::initialize();
 }
 
 SequencePlayer::~SequencePlayer()
@@ -227,6 +229,11 @@ RTC::ReturnCode_t SequencePlayer::onExecute(RTC::UniqueId ec_id)
     if (m_basePosInitIn.isNew()) m_basePosInitIn.read();
     if (m_baseRpyInitIn.isNew()) m_baseRpyInitIn.read();
     if (m_zmpRefInitIn.isNew()) m_zmpRefInitIn.read();
+
+    double qshm[m_robot->numJoints()];
+    double tmshm;
+    if (shmseq::getJointAngles(qshm, &tmshm, m_robot->numJoints()))
+        this->setJointAngles(qshm, tmshm);
 
     if (m_gname != "" && m_seq->isEmpty(m_gname.c_str())){
         if (m_waitFlag){
