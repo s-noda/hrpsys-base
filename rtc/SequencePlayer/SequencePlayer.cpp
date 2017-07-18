@@ -67,7 +67,7 @@ SequencePlayer::SequencePlayer(RTC::Manager* manager)
     m_service0.player(this);
     m_clearFlag = false;
     m_waitFlag = false;
-    shmseq::initialize();
+    shmseq::initialize(true);
 }
 
 SequencePlayer::~SequencePlayer()
@@ -232,7 +232,7 @@ RTC::ReturnCode_t SequencePlayer::onExecute(RTC::UniqueId ec_id)
 
     double qshm[m_robot->numJoints()];
     double tmshm;
-    if (shmseq::getJointAngles(qshm, &tmshm, m_robot->numJoints()))
+    if (shmseq::getJointAngles(qshm, &tmshm, m_robot->numJoints(), false))
         this->setJointAngles(qshm, tmshm);
 
     if (m_gname != "" && m_seq->isEmpty(m_gname.c_str())){
