@@ -406,6 +406,7 @@ class HrpsysConfigurator(object):
             if self.rfu:
                 connectPorts(self.st.port("diffFootOriginExtMoment"), self.rfu.port("diffFootOriginExtMoment"))
                 connectPorts(self.rfu.port("refFootOriginExtMoment"), self.abc.port("refFootOriginExtMoment"))
+                connectPorts(self.rfu.port("refFootOriginExtMomentIsHoldValue"), self.abc.port("refFootOriginExtMomentIsHoldValue"))
             if self.octd:
                 connectPorts(self.abc.port("contactStates"), self.octd.port("contactStates"))
 
@@ -920,6 +921,8 @@ class HrpsysConfigurator(object):
         if self.rfu != None:
             for sen in filter(lambda x: x.type == "Force", self.sensors):
                 self.connectLoggerPort(self.rfu, "ref_"+sen.name+"Out")
+        if self.octd != None:
+            self.connectLoggerPort(self.octd, "octdData")
         self.log_svc.clear()
         ## parallel running log process (outside from rtcd) for saving logs by emergency signal
         if self.log and (self.log_use_owned_ec or not isinstance(self.log.owned_ecs[0], OpenRTM._objref_ExtTrigExecutionContextService)):
@@ -2243,7 +2246,7 @@ dr=0, dp=0, dw=0, tm=10, wait=True):
         @param gname: Name of the joint group.
         @return bool
         '''
-        return self.seq_svc.clearJointAngles(gname)
+        return self.seq_svc.clearJointAnglesOfGroup(gname)
 
     def removeForceSensorOffsetRMFO(self, sensor_names=[], tm=8.0):
         '''!@brief
